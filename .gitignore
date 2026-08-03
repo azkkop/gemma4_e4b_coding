@@ -1,0 +1,31 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# 학습 산출물 / 대용량
+outputs/
+outputs_incompatible_r16/
+gemma4_e4b_coding_lora/
+gemma4_e4b_coding_gguf/
+gemma4_e4b_coding_merged/
+_unsloth_temporary_saved_buffers/
+*.gguf
+*.bin
+*.safetensors
+wandb/
+
+# 환경 / IDE
+.env
+.HF_TOKEN
+.idea/
+.vscode/
+*.log
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store

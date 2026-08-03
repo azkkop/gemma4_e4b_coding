@@ -1,0 +1,42 @@
+# Gemma 4 E4B Coding AI - Unsloth + 4-bit QLoRA dependencies
+# Target: RTX 3060 12GB / Windows (native) or WSL2
+#
+# CRITICAL INSTALL ORDER (do not reverse):
+# 1) Create venv (Python 3.10-3.12)
+# 2) Upgrade pip
+# 3) Install THIS file first (unsloth stack):
+#      pip install -r requirements.txt
+# 4) THEN force CUDA PyTorch (unsloth may pull CPU torch from PyPI):
+#      pip install --force-reinstall torch==2.11.0 torchvision==0.26.0 torchaudio==2.11.0 --index-url https://download.pytorch.org/whl/cu126
+# 5) Pin fsspec for datasets compatibility:
+#      pip install "fsspec>=2023.1.0,<=2025.9.0"
+# 6) Verify:
+#      python -c "import torch; from unsloth import FastLanguageModel; print(torch.__version__, torch.cuda.is_available())"
+#
+# Expected: torch 2.11.0+cu126 , cuda True
+
+unsloth>=2026.4.0
+unsloth_zoo>=2026.4.0
+
+transformers>=4.51.3,<=5.5.0,!=4.52.0,!=4.52.1,!=4.52.2,!=4.52.3,!=4.53.0,!=4.54.0,!=4.55.0,!=4.55.1,!=4.57.0,!=4.57.4,!=4.57.5,!=5.0.0,!=5.1.0
+trl>=0.18.2,<=0.24.0,!=0.19.0
+peft>=0.18.0,!=0.11.0
+accelerate>=0.34.1
+datasets>=3.4.1,<4.4.0,!=4.0.*,!=4.1.0
+huggingface_hub>=0.34.0
+
+bitsandbytes>=0.45.5,!=0.46.0,!=0.48.0
+
+sentencepiece>=0.2.0
+protobuf>=4.25.0
+safetensors>=0.4.5
+einops>=0.8.0
+tyro>=0.9.0
+tqdm>=4.66.0
+numpy>=1.26.0,<3.0.0
+packaging>=24.0
+pyyaml>=6.0.1
+fsspec>=2023.1.0,<=2025.9.0
+
+hf_transfer>=0.1.8
+requests>=2.32.0
