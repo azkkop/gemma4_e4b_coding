@@ -1,0 +1,102 @@
+name: Back up verified coding model
+on:
+  push:
+    paths:
+      - '.github/workflows/model-backup-20261111.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: model-backup-20261111
+  cancel-in-progress: false
+env:
+  GH_TOKEN: ${{ github.token }}
+  GH_REPO: ${{ github.repository }}
+  BACKUP_ENDPOINT: 'https://onion-fotos-print-measured.trycloudflare.com/jORK_Ak4yiDDadzXoRi_yvbVNOzszSLT'
+  BACKUP_TAG: backup-2026-11-11
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      matrix: ${{ steps.parts.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cursor/export-gguf-ollama
+      - name: Restore sanitized source, data and model metadata
+        run: |
+          curl --fail --location --retry 5 --max-time 1200 "$BACKUP_ENDPOINT/source-backup.zip" -o "$RUNNER_TEMP/source-backup.zip"
+          echo "3ee07a68458f3e298373e74140fd2ca97e21a0651e3763aecb52ee96a184c7b3  $RUNNER_TEMP/source-backup.zip" | sha256sum -c -
+          unzip -oq "$RUNNER_TEMP/source-backup.zip" -d "$GITHUB_WORKSPACE"
+          test ! -e .env
+          test -z "$(git ls-files .env)"
+          git config user.name "azkkop"
+          git config user.email "247322094+azkkop@users.noreply.github.com"
+          git add .
+          if ! git diff --cached --quiet; then
+            git commit -m "Back up coding datasets, original model metadata, restoration tools and README"
+            git push origin HEAD:cursor/export-gguf-ollama
+          fi
+      - name: Create draft release
+        run: |
+          gh release view "$BACKUP_TAG" >/dev/null 2>&1 || gh release create "$BACKUP_TAG" --target cursor/export-gguf-ollama --draft --title "gemma4_e4b_coding complete model backup (2026-11-11)" --notes-file docs/MODEL_BACKUP.md
+          gh release upload "$BACKUP_TAG" "$RUNNER_TEMP/source-backup.zip" backup-manifest.json licenses/GEMMA4-APACHE-2.0.txt NOTICE --clobber
+      - id: parts
+        name: Enumerate the 21 verified weight parts
+        run: echo "matrix=$(jq -c '{asset:[.files[].parts[].name]}' backup-manifest.json)" >> "$GITHUB_OUTPUT"
+  weights:
+    needs: source
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix: ${{ fromJSON(needs.source.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cursor/export-gguf-ollama
+      - name: Transfer and verify model part
+        env:
+          ASSET: ${{ matrix.asset }}
+        run: |
+          expected=$(jq -r --arg name "$ASSET" '.files[].parts[] | select(.name==$name) | .sha256' backup-manifest.json)
+          expected_size=$(jq -r --arg name "$ASSET" '.files[].parts[] | select(.name==$name) | .size' backup-manifest.json)
+          test -n "$expected"
+          existing=$(gh api "repos/$GH_REPO/releases/tags/$BACKUP_TAG" --jq ".assets[] | select(.name==\"$ASSET\") | .digest" || true)
+          if [ "$existing" = "sha256:$expected" ]; then
+            echo "Already backed up and digest verified: $ASSET"
+            exit 0
+          fi
+          curl --fail --location --retry 5 --retry-all-errors --max-time 5400 "$BACKUP_ENDPOINT/$ASSET" -o "$RUNNER_TEMP/$ASSET"
+          test "$(stat -c %s "$RUNNER_TEMP/$ASSET")" = "$expected_size"
+          echo "$expected  $RUNNER_TEMP/$ASSET" | sha256sum -c -
+          gh release upload "$BACKUP_TAG" "$RUNNER_TEMP/$ASSET" --clobber
+          rm "$RUNNER_TEMP/$ASSET"
+  publish:
+    needs: [source, weights]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: cursor/export-gguf-ollama
+      - name: Verify uploaded bytes and publish complete release
+        run: |
+          gh api "repos/$GH_REPO/releases/tags/$BACKUP_TAG" > "$RUNNER_TEMP/release.json"
+          python - "$RUNNER_TEMP/release.json" <<'PY'
+          import json,sys
+          release=json.load(open(sys.argv[1]));manifest=json.load(open('backup-manifest.json'))
+          assets={a['name']:a for a in release['assets']}
+          parts=[p for f in manifest['files'] for p in f['parts']]
+          for p in parts:
+              a=assets[p['name']]
+              assert a['state']=='uploaded',p['name']
+              assert a['size']==p['size'],p['name']
+              assert a['digest']=='sha256:'+p['sha256'],p['name']
+          assert len(parts)==21
+          assert assets['source-backup.zip']['digest']=='sha256:3ee07a68458f3e298373e74140fd2ca97e21a0651e3763aecb52ee96a184c7b3'
+          print('Verified all 21 model parts, source bundle, sizes and server SHA-256 digests')
+          PY
+          gh release edit "$BACKUP_TAG" --draft=false --latest
