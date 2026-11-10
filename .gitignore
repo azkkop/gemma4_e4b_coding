@@ -1,14 +1,12 @@
+# Python
 .venv/
 venv/
 __pycache__/
 *.py[cod]
 *.egg-info/
 .pytest_cache/
-.env
-.env.*
-!.env.example
-.HF_TOKEN
-*.log
+
+# 학습 산출물 / 대용량
 outputs/
 outputs_incompatible_r16/
 gemma4_e4b_coding_lora/
@@ -19,17 +17,30 @@ unsloth_compiled_cache/
 *.gguf
 *.bin
 *.safetensors
-*.part-*
 wandb/
-uploads/
+
+# 환경 / IDE
+.env
+.env.*
+!.env.example
+.HF_TOKEN
 .idea/
 .vscode/
+*.log
+
+# Agent uploads (user attachments)
+uploads/
+
+# IDE client build artifacts
 ide/node_modules/
 ide/dist/
 ide/dist-electron/
 ide/release/
-*.tsbuildinfo
+
+# Dataset backups (full dumps)
 dataset.jsonl.bak
+
+# OS
 Thumbs.db
 Desktop.ini
 .DS_Store

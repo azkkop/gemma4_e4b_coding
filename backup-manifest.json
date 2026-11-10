@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "model_name": "gemma4_e4b_coding",
+  "created_at": "2026-11-11",
+  "release_tag": "backup-2026-11-11",
+  "license_reference": "https://ai.google.dev/gemma/apache_2",
+  "part_size": 1073741824,
+  "files": [
+    {
+      "key": "gguf",
+      "path": "artifacts/gemma4_e4b_coding-Q4_Q8.gguf",
+      "size": 5991516448,
+      "sha256": "88f1c2501f37147171dff83fe40cf82a357f925f6392ac251bc936020ad68b7c",
+      "parts": [
+        {
+          "name": "gemma4_e4b_coding-Q4_Q8.gguf.part-000",
+          "size": 1073741824,
+          "sha256": "bc0774ca55b8ffa89edae7ef3b18a9ee83ea0910850bde1d8810bf7d18c3a59c",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/gemma4_e4b_coding-Q4_Q8.gguf.part-000"
+        },
+        {
+          "name": "gemma4_e4b_coding-Q4_Q8.gguf.part-001",
+          "size": 1073741824,
+          "sha256": "ee68ec5c3be4ad6001a8b8527327d52a6ed54115bd1fbe556d42c440fe16a5bc",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/gemma4_e4b_coding-Q4_Q8.gguf.part-001"
+        },
+        {
+          "name": "gemma4_e4b_coding-Q4_Q8.gguf.part-002",
+          "size": 1073741824,
+          "sha256": "56b7b97ec0a3e47c1eb146cb1fda9136a2029b4a4f6bbd54b2b3de49a5fb92ca",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/gemma4_e4b_coding-Q4_Q8.gguf.part-002"
+        },
+        {
+          "name": "gemma4_e4b_coding-Q4_Q8.gguf.part-003",
+          "size": 1073741824,
+          "sha256": "615d7ce805009c2d59c93d2e2bb64fbc0e27cff983cad221029b8e90f5657ac5",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/gemma4_e4b_coding-Q4_Q8.gguf.part-003"
+        },
+        {
+          "name": "gemma4_e4b_coding-Q4_Q8.gguf.part-004",
+          "size": 1073741824,
+          "sha256": "dc3e4f866c349c82b65b2a4fd512955e858de5f8682d6aaf318d6bb0eeca87e1",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/gemma4_e4b_coding-Q4_Q8.gguf.part-004"
+        },
+        {
+          "name": "gemma4_e4b_coding-Q4_Q8.gguf.part-005",
+          "size": 622807328,
+          "sha256": "f43ed2230ed890c7c8ebd503bdd8b82309cf7e562453753d7e69e244f9cc4352",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/gemma4_e4b_coding-Q4_Q8.gguf.part-005"
+        }
+      ]
+    },
+    {
+      "key": "original",
+      "path": "artifacts/hf/model.safetensors",
+      "size": 15992595884,
+      "sha256": "cfbd3d2f1cd71bd471c37fe2bf8546d5028d41e5736f64e1ca6c6b8893125503",
+      "parts": [
+        {
+          "name": "model.safetensors.part-000",
+          "size": 1073741824,
+          "sha256": "8594ed2f715c26b68e3a547fd6eb7890128455154443a6950767ca86cf89f600",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-000"
+        },
+        {
+          "name": "model.safetensors.part-001",
+          "size": 1073741824,
+          "sha256": "33dad2873c53df47ef50c1a0abbff017298162a732a93836500f333c7de39b93",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-001"
+        },
+        {
+          "name": "model.safetensors.part-002",
+          "size": 1073741824,
+          "sha256": "0109cd98a0e52937ee1bd96469deefbafb0fdfdabb44b55055ef0bdadffbdede",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-002"
+        },
+        {
+          "name": "model.safetensors.part-003",
+          "size": 1073741824,
+          "sha256": "e9a7d29190b0244b2356643acfb644be4b098ca69deb758ddff33655b03c8606",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-003"
+        },
+        {
+          "name": "model.safetensors.part-004",
+          "size": 1073741824,
+          "sha256": "1876c713e7c17a16c047624fa26be5dccf5d09ce58689375eb02a626cd638ff9",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-004"
+        },
+        {
+          "name": "model.safetensors.part-005",
+          "size": 1073741824,
+          "sha256": "1b94c4b7624c41928c80fcc58d82bcc7915d0378848af198964119551cfed1bf",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-005"
+        },
+        {
+          "name": "model.safetensors.part-006",
+          "size": 1073741824,
+          "sha256": "089dc0d38c735a0aba078478f34b66457b7db45d4dfdca0404857c1373c426df",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-006"
+        },
+        {
+          "name": "model.safetensors.part-007",
+          "size": 1073741824,
+          "sha256": "de0f4612600d83f42908a5a6d194ba9728a9310027a1c277fbfe5e6c3b8c526b",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-007"
+        },
+        {
+          "name": "model.safetensors.part-008",
+          "size": 1073741824,
+          "sha256": "46d6e57d564fb5b4c141bf722ca9f489c21ffc0faee2fd2f62f3f82a5aead909",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-008"
+        },
+        {
+          "name": "model.safetensors.part-009",
+          "size": 1073741824,
+          "sha256": "37487907e24fce706d6e78523c90db27dd8e56d8ccecec8deded625648684012",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-009"
+        },
+        {
+          "name": "model.safetensors.part-010",
+          "size": 1073741824,
+          "sha256": "03902cf82690e4504735f417285d6a776ccf9f939bdf5b631fdd701d704f2eaa",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-010"
+        },
+        {
+          "name": "model.safetensors.part-011",
+          "size": 1073741824,
+          "sha256": "6255a39ea2971d2d2d64283cbf84f165edc9bb32d92fb7711be029953b4a1d43",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-011"
+        },
+        {
+          "name": "model.safetensors.part-012",
+          "size": 1073741824,
+          "sha256": "9c6724505456302c0111c266a29196579ff8acf34096c48f4b2dbdf5803c5afa",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-012"
+        },
+        {
+          "name": "model.safetensors.part-013",
+          "size": 1073741824,
+          "sha256": "23cfe6208e67cfbcad7113f94af2332fe18881a63957dad1f0208239bc07ed8f",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-013"
+        },
+        {
+          "name": "model.safetensors.part-014",
+          "size": 960210348,
+          "sha256": "341cf74911c56e91e43c0e1c46748d0bb183e59ca8d77943dc389147a77cf5a4",
+          "url": "https://github.com/azkkop/gemma4_e4b_coding/releases/download/backup-2026-11-11/model.safetensors.part-014"
+        }
+      ]
+    }
+  ]
+}

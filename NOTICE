@@ -1,0 +1,11 @@
+gemma4_e4b_coding is based on Google's Gemma 4 E4B model family.
+Gemma 4 is distributed under Apache License 2.0:
+https://ai.google.dev/gemma/apache_2
+See licenses/GEMMA4-APACHE-2.0.txt for the license text.
+
+Modifications: coding fine-tuning as described by the project developer;
+recovery and text-tensor conversion to GGUF on 2026-11-10;
+Q4_0 matrix / Q8_0 embedding quantization for the runnable backup.
+The recovered original safetensors bytes are preserved unchanged.
+Past training logs and LoRA adapters were not available for independent comparison.
+No endorsement by Google is implied.
