@@ -231,7 +231,132 @@ ollama run gemma4-e4b-coding
 
 ---
 
-## 6. 학습 원리 요약
+## 6. Cursor형 로컬 API (채팅 + 전체 도구)
+
+채팅만 프록시하는 API가 아닙니다. **파일/폴더 생성·수정, 터미널, 검색, 웹, 비전**까지 HTTP로 호출합니다.
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements-api.txt
+python serve_api.py
+# 문서 UI: http://127.0.0.1:8000/docs
+```
+
+### 아키텍처 (Cursor처럼)
+
+| 모드 | 엔드포인트 | 동작 |
+|------|------------|------|
+| **IDE 에이전트** | `POST /v1/ide/chat` | 모델이 도구 선택 → **서버가 워크스페이스에서 실행** |
+| **도구 직접 호출** | `POST /v1/tools/call` | 프론트가 `write_file` 등 개별 실행 |
+| **tool_calls 프로토콜** | `POST /v1/chat/completions` + `tools` | 모델이 `tool_calls` 반환 → 클라이언트가 `/v1/tools/call` |
+| **에이전트 모델** | `model: gemma4-e4b-coding-agent` | chat completions에서 서버 측 도구 루프 |
+| 순수 채팅 | `model: gemma4-e4b-coding` | 도구 없음 (설명용) |
+
+### 도구 API
+
+```powershell
+# 도구 목록 (OpenAI function schema)
+curl http://127.0.0.1:8000/v1/tools -H "X-Workspace: C:/Users/USER/gemma4-e4b-coding-ft"
+
+# 폴더/파일 실제로 생성
+curl http://127.0.0.1:8000/v1/tools/call -H "Content-Type: application/json" -d "{\"name\":\"create_tree\",\"arguments\":{\"items\":[{\"path\":\"demo_ide/\",\"content\":\"\"},{\"path\":\"demo_ide/main.py\",\"content\":\"print(1)\\n\"}]},\"workspace\":\".\"}"
+
+# 디렉터리 목록
+curl http://127.0.0.1:8000/v1/tools/call -H "Content-Type: application/json" -d "{\"name\":\"list_dir\",\"arguments\":{\"path\":\".\"},\"workspace\":\".\"}"
+```
+
+### IDE 채팅 (추천)
+
+```powershell
+curl http://127.0.0.1:8000/v1/ide/chat -H "Content-Type: application/json" -d "{\"workspace\":\".\",\"messages\":[{\"role\":\"user\",\"content\":\"demo_app 폴더 만들고 hello.py 작성\"}],\"execute_tools\":true}"
+```
+
+SSE:
+```powershell
+curl -N http://127.0.0.1:8000/v1/ide/chat -H "Content-Type: application/json" -d "{\"workspace\":\".\",\"stream\":true,\"messages\":[{\"role\":\"user\",\"content\":\"README 요약\"}]}"
+```
+
+### OpenAI SDK로 에이전트
+
+```python
+from openai import OpenAI
+client = OpenAI(base_url="http://127.0.0.1:8000/v1", api_key="unused")
+
+# 서버가 도구까지 실행
+r = client.chat.completions.create(
+    model="gemma4-e4b-coding-agent",
+    messages=[{"role": "user", "content": "utils 폴더에 hello.py 만들어줘"}],
+    extra_body={"workspace": "."},  # 또는 헤더 X-Workspace
+)
+print(r.choices[0].message.content)
+print(r.model_extra)  # steps 등
+```
+
+헤더 `X-Workspace` 또는 body `workspace`로 작업 폴더 지정.  
+환경변수: `API_PORT`, `API_KEY`, `OLLAMA_BASE_URL`, `API_MODEL_NAME`, `API_AGENT_MODEL_NAME`, `VISION_MODEL`, `AGENT_WORKSPACE`, `AGENT_ALLOWED_ROOTS`, `AGENT_APPROVAL_MODE`
+
+---
+
+## 6.1 데스크톱 IDE 클라이언트 (Electron)
+
+로컬 Cursor형 UI: 파일 트리 + Monaco + 에이전트 채팅. API 서버가 켜져 있어야 합니다.
+
+```powershell
+# 터미널 1
+python serve_api.py
+
+# 터미널 2
+cd ide
+npm install
+npm run dev
+```
+
+설정에서 API Base(`http://127.0.0.1:8000`), `.env`의 `API_KEY`, Workspace 폴더를 지정하세요.  
+자세한 내용: [`ide/README.md`](ide/README.md)
+
+---
+
+## 7. 로컬 코딩 에이전트 (CLI)
+
+파일 읽기/수정/생성, 터미널, 테스트, 웹 검색 도구가 붙은 조수입니다. Ollama `gemma4-e4b-coding` 사용.
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+# 한 번 작업
+python coding_agent.py "프로젝트 구조 확인하고 README 상단에 에이전트 사용법 한 줄 추가"
+
+# 대화 모드
+python coding_agent.py
+
+# 위험 작업 전 승인
+python coding_agent.py --approval ask "테스트 돌려줘"
+
+# 읽기 전용
+python coding_agent.py --approval readonly "이 프로젝트 구조 설명해줘"
+```
+
+옵션: `--workspace`, `--model`, `--max-rounds`, `--approval`, `--no-writes`, `--no-terminal`, `--no-web`
+
+도구: `list_dir`, `read_file`, `write_file`, `str_replace`, `make_dir`, `create_tree`, `search_text`, `run_terminal`, `run_tests`, `git_status`, `git_diff`, `list_uploads`, `read_upload`, `analyze_image`, `web_search`  
+워크스페이스 밖 경로·위험 명령은 차단됩니다. `AGENT_ALLOWED_ROOTS`로 API/CLI 워크스페이스 허용 루트를 제한할 수 있습니다.
+
+### 파일 첨부 / 비전
+
+파인튜닝 GGUF(`gemma4-e4b-coding`)는 텍스트 전용입니다. 이미지는 Ollama 베이스 `gemma4:e4b`로 분석합니다.
+
+```powershell
+# 스크린샷/문서 첨부
+python coding_agent.py --attach error.png "이 에러 원인 찾고 관련 코드 수정해줘"
+python coding_agent.py --attach notes.pdf --attach data.csv "핵심만 요약"
+
+# 대화 중: @C:\path\to\file.png 이 화면 설명해줘
+```
+
+첨부 파일은 `uploads/` 로 복사됩니다. PDF는 `pip install pypdf` 필요.
+
+---
+
+## 8. 학습 원리 요약
 
 1. **4-bit 양자화**: 베이스 가중치를 NF4로 로드해 12GB VRAM에 맞춤  
 2. **LoRA**: `q/k/v/o_proj` + `gate/up/down_proj` 에 저랭크 어댑터만 학습  
@@ -241,7 +366,7 @@ ollama run gemma4-e4b-coding
 
 ---
 
-## 7. 참고 / 문제 해결
+## 9. 참고 / 문제 해결
 
 | 증상 | 조치 |
 |------|------|
